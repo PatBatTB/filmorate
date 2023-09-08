@@ -1,16 +1,13 @@
 package com.github.patbattb.filmorate.controller;
 
-import com.github.patbattb.filmorate.exception.UserAlreadyExist;
 import com.github.patbattb.filmorate.model.User;
+import com.github.patbattb.filmorate.service.UserService;
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
 @Slf4j
 @Value
@@ -18,38 +15,26 @@ import java.util.Set;
 @RequestMapping("/users")
 public class UserController {
 
-    @Getter(AccessLevel.NONE)
-    Set<User> users = new HashSet<>();
+    UserService userService;
 
     @GetMapping
-    Set<User> get() {
-        return users;
+    Collection<User> getAll() {
+        return userService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    User getUserById(@PathVariable int id) {
+        return userService.getUserById(id);
     }
 
     @PostMapping
     User post(@Valid @RequestBody User user) {
-        try {
-            if (user == null) throw new IllegalArgumentException("The user cannot be null.");
-            if (users.contains(user)) throw new UserAlreadyExist("The user is already exist.");
-            users.add(user);
-            log.debug("A user with id {} has been added.", user.getId());
-
-        } catch (UserAlreadyExist | IllegalArgumentException e) {
-            log.warn(e.getMessage());
-        }
-        return user;
+        return userService.post(user);
     }
 
     @PutMapping
     User put(@Valid @RequestBody User user) {
-        try {
-            if (user == null) throw new IllegalArgumentException("The user from request cannot be null");
-            users.add(user);
-            log.debug("A user with id {} has been putted.", user.getId());
-        } catch (IllegalArgumentException e) {
-            log.warn(e.getMessage());
-        }
-        return user;
+        return userService.put(user);
     }
 
 }

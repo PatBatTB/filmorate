@@ -4,26 +4,28 @@ import com.github.patbattb.filmorate.annotation.AfterThen;
 import com.github.patbattb.filmorate.annotation.PositiveDuration;
 import jakarta.validation.constraints.*;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.time.Duration;
 import java.time.LocalDate;
 
-@Value
+@RequiredArgsConstructor
+@Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Film {
 
-    private static int currentId = 0;
-
-    int id = ++currentId;
+    @Setter
+    int id;
     @NotBlank
     @EqualsAndHashCode.Include
-    String title;
+    private final String title;
     @Size(max=200)
-    String description;
+    private final String description;
     @EqualsAndHashCode.Include
     @AfterThen("1894-12-31")
-    LocalDate releaseDate;
+    private final LocalDate releaseDate;
     @PositiveDuration
-    Duration duration;
+    private final Duration duration;
 }

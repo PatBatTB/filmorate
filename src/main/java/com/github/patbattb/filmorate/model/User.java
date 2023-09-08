@@ -1,29 +1,30 @@
 package com.github.patbattb.filmorate.model;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
-
-@Value
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Getter
 public class User {
 
-    private static int currentId = 0;
-
-    int id = ++currentId;
+    @Setter
+    int id;
     @Email
     @EqualsAndHashCode.Include
-    String email;
+    @NotBlank
+    private final String email;
     @Pattern(regexp="^\\S+$")
-    String login;
-    String nickname;
+    private final String login;
+    private final String nickname;
     @Past
-    LocalDate birthday;
+    private final LocalDate birthday;
 
     public User(String email, String login, String nickname, LocalDate birthday) {
         this.email = email;
