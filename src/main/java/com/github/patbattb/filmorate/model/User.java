@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Getter
@@ -25,6 +27,7 @@ public class User {
     private final String nickname;
     @Past
     private final LocalDate birthday;
+    private final Set<Integer> friendList;
 
     public User(String email, String login, String nickname, LocalDate birthday) {
         this.email = email;
@@ -35,5 +38,6 @@ public class User {
             this.nickname = nickname;
         }
         this.birthday = birthday;
+        this.friendList = new HashSet<>();
     }
 }
