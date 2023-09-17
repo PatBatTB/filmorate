@@ -10,6 +10,8 @@ import lombok.Setter;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Getter
@@ -28,4 +30,10 @@ public class Film {
     private final LocalDate releaseDate;
     @PositiveDuration
     private final Duration duration;
+    private final Set<Integer> likes = new HashSet<>();
+
+    public int getLikesCount() {
+        return likes.size();
+    }
+
 }

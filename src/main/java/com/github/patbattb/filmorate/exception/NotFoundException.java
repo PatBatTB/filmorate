@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class NotFoundException extends Exception{
     public NotFoundException(String message) {
         super(message);
-        log.warn(message);
+        log.warn(String.format("\"%s\" in (%s)", message, this.getStackTrace()[0]));
     }
 }
