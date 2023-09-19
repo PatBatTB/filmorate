@@ -65,14 +65,21 @@ public class UserService {
                 .collect(Collectors.toSet());
     }
 
-    public User addFriend(int id, int friendId) throws FilmorateValidationException, UserNotFoundException {
+    public User addFriend(int userId, int friendId) throws FilmorateValidationException, UserNotFoundException {
         User user;
         User friend;
-        if (id == friendId) throw new FilmorateValidationException("The user ID cannot be the same as a friend's ID");
-        user = storageGetService.getUser(id);
+        boolean isFriendReply;
+        if (userId == friendId) throw new FilmorateValidationException("The user ID cannot be the same as a friend's ID");
+        user = storageGetService.getUser(userId);
         friend = storageGetService.getUser(friendId);
-        user.getFriendList().add(friendId);
-        friend.getFriendList().add(id);
+        isFriendReply = friend.getFriendRequestList().contains(userId);
+        if (isFriendReply) {
+            user.getFriendList().add(friendId);
+            friend.getFriendList().add(userId);
+            friend.getFriendRequestList().remove(userId);
+        } else {
+            user.getFriendRequestList().add(friendId);
+        }
         return user;
     }
 
@@ -93,10 +100,10 @@ public class UserService {
         if (id == otherId) throw new FilmorateValidationException("The user ID cannot be the same as a friend's ID");
         user = storageGetService.getUser(id);
         otherUser = storageGetService.getUser(otherId);
-        Set<Integer> commonFriends = new HashSet<>(user.getFriendList());
-        commonFriends.retainAll(otherUser.getFriendList());
+        Set<Integer> userFriends = user.getFriendList();
+        userFriends.retainAll(otherUser.getFriendList());
         return userStorage.getAll().stream()
-                .filter(u -> commonFriends.contains(u.getId()))
+                .filter(u -> userFriends.contains(u.getId()))
                 .collect(Collectors.toSet());
     }
 }

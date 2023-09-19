@@ -28,6 +28,7 @@ public class User {
     @Past
     private final LocalDate birthday;
     private final Set<Integer> friendList;
+    private final Set<Integer> friendRequestList;
 
     public User(String email, String login, String nickname, LocalDate birthday) {
         this.email = email;
@@ -39,5 +40,6 @@ public class User {
         }
         this.birthday = birthday;
         this.friendList = new HashSet<>();
+        this.friendRequestList = new HashSet<>();
     }
 }

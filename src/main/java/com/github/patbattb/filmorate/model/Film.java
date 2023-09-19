@@ -19,12 +19,16 @@ import java.util.Set;
 public class Film {
 
     @Setter
-    int id;
+    private int id;
     @NotBlank
     @EqualsAndHashCode.Include
     private final String title;
     @Size(max=200)
     private final String description;
+    @Setter
+    private Set<String> genres;
+    @Setter
+    private String mpaaRating;
     @EqualsAndHashCode.Include
     @AfterThen("1894-12-31")
     private final LocalDate releaseDate;
