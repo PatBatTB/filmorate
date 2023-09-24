@@ -6,7 +6,7 @@ import com.github.patbattb.filmorate.model.Film;
 
 import java.util.Collection;
 
-public interface FilmStorage {
+public interface FilmStorageDao {
 
     Collection<Film> getAll();
     void add(Film film) throws FilmAlreadyExistsException;

@@ -4,7 +4,7 @@ import com.github.patbattb.filmorate.exception.FilmAlreadyExistsException;
 import com.github.patbattb.filmorate.exception.FilmNotFoundException;
 import com.github.patbattb.filmorate.exception.NotFoundException;
 import com.github.patbattb.filmorate.model.Film;
-import com.github.patbattb.filmorate.service.FilmService;
+import com.github.patbattb.filmorate.service.film.FilmService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;

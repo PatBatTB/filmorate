@@ -4,7 +4,8 @@ import com.github.patbattb.filmorate.exception.UserAlreadyExistsException;
 import com.github.patbattb.filmorate.exception.UserNotFoundException;
 import com.github.patbattb.filmorate.exception.FilmorateValidationException;
 import com.github.patbattb.filmorate.model.User;
-import com.github.patbattb.filmorate.service.UserService;
+import com.github.patbattb.filmorate.service.user.FriendService;
+import com.github.patbattb.filmorate.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import java.util.Collection;
 public class UserController {
 
     UserService userService;
+    FriendService friendService;
 
     @GetMapping
     Collection<User> getAll() {
@@ -40,26 +42,31 @@ public class UserController {
         return userService.getUserById(id);
     }
 
+    @DeleteMapping("/{id}")
+    User delete(@PathVariable int id) throws UserNotFoundException {
+        return userService.deleteUserById(id);
+    }
+
     @GetMapping("/{id}/friends")
     Collection<User> getFriendsList(@PathVariable int id) throws UserNotFoundException {
-        return userService.getFriendsList(id);
+        return friendService.getFriendsList(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     User addFriend(@PathVariable int id, @PathVariable int friendId)
-            throws UserNotFoundException, FilmorateValidationException {
-        return userService.addFriend(id, friendId);
+            throws UserNotFoundException, FilmorateValidationException, UserAlreadyExistsException {
+        return friendService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     User deleteFriend(@PathVariable int id, @PathVariable int friendId)
             throws UserNotFoundException, FilmorateValidationException {
-        return userService.removeFriend(id, friendId);
+        return friendService.removeFriend(id, friendId);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     Collection<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId)
             throws UserNotFoundException, FilmorateValidationException {
-        return userService.getCommonFriends(id, otherId);
+        return friendService.getCommonFriends(id, otherId);
     }
 }
