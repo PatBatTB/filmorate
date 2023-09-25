@@ -9,9 +9,9 @@ public interface UserStorageDao {
 
     Collection<User> getAll();
 
-    Optional<User> findById(int id);
+    Optional<User> getById(int id);
 
-    Optional<User> findByEmail(String email);
+    Optional<User> getByEmail(String email);
 
     Optional<User> add(User user);
 

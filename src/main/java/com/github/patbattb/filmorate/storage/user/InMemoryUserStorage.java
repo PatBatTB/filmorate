@@ -21,14 +21,14 @@ public class InMemoryUserStorage implements UserStorageDao {
     }
 
     @Override
-    public Optional<User> findById(int id) {
+    public Optional<User> getById(int id) {
         return users.stream()
                 .filter(user -> user.getId() == id)
                 .findFirst();
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public Optional<User> getByEmail(String email) {
         return users.stream()
                 .filter(user -> user.getEmail().equals(email))
                 .findFirst();

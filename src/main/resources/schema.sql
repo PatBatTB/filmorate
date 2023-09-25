@@ -1,9 +1,15 @@
+CREATE TABLE IF NOT EXISTS mpaa_ratings (
+  mpaa_id integer PRIMARY KEY,
+  name varchar NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS films (
   film_id integer PRIMARY KEY,
   title varchar NOT NULL,
   description varchar,
-  release_date timestamp,
-  duration time
+  release_date date,
+  duration integer,
+  mpaa_id integer REFERENCES mpaa_ratings (mpaa_id)
 );
 
 CREATE TABLE IF NOT EXISTS genres (
@@ -17,28 +23,17 @@ CREATE TABLE IF NOT EXISTS films_x_genres (
   PRIMARY KEY (film_id, genre_id)
 );
 
-CREATE TABLE IF NOT EXISTS mpaa_ratings (
-  rating_id integer PRIMARY KEY,
-  name varchar NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS films_x_mpaa_ratings (
-  film_id integer REFERENCES films (film_id),
-  rating_id integer REFERENCES mpaa_ratings (rating_id),
-  PRIMARY KEY (film_id, rating_id)
-);
-
 CREATE TABLE IF NOT EXISTS users (
   user_id integer PRIMARY KEY,
   email varchar NOT NULL UNIQUE,
   login varchar,
   nickname varchar,
-  birth_date timestamp
+  birth_date date
 );
 
 CREATE TABLE IF NOT EXISTS likes (
-  film_id integer REFERENCES films (film_id),
-  user_id integer REFERENCES users (user_id),
+  film_id integer REFERENCES films (film_id) ON DELETE CASCADE,
+  user_id integer REFERENCES users (user_id) ON DELETE CASCADE,
   PRIMARY KEY (film_id, user_id)
 );
 

@@ -14,12 +14,10 @@ import java.util.*;
 @Service
 public class UserService {
 
-    private static int id = 0;
     UserStorageDao userStorageDao;
 
     public UserService(@Qualifier("userStorageDaoImpl") UserStorageDao userStorageDao) {
         this.userStorageDao = userStorageDao;
-        id = calculateStartId();
     }
 
     public Collection<User> getAll() {
@@ -27,15 +25,15 @@ public class UserService {
     }
 
     public User getUserById(int id) throws UserNotFoundException {
-        return userStorageDao.findById(id).orElseThrow(UserNotFoundException::new);
+        return userStorageDao.getById(id).orElseThrow(UserNotFoundException::new);
     }
 
     public User getUserByEmail(String email) throws UserNotFoundException {
-        return userStorageDao.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        return userStorageDao.getByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
     public User post(User user) throws UserAlreadyExistsException {
-        if (userStorageDao.findByEmail(user.getEmail()).isPresent()) throw new UserAlreadyExistsException();
+        if (userStorageDao.getByEmail(user.getEmail()).isPresent()) throw new UserAlreadyExistsException();
         user.setId(getNextId());
         user = userStorageDao.add(user).orElseThrow(RuntimeException::new);
         log.debug("A user with id {} has been added.", user.getId());
@@ -43,7 +41,7 @@ public class UserService {
     }
 
     public User put(User user) {
-        var optionalUser = userStorageDao.findByEmail(user.getEmail());
+        var optionalUser = userStorageDao.getByEmail(user.getEmail());
         if (optionalUser.isEmpty()) {
             user.setId(getNextId());
             user = userStorageDao.add(user).orElseThrow(RuntimeException::new);
@@ -61,17 +59,13 @@ public class UserService {
     }
 
     public User deleteUserById(int id) throws UserNotFoundException {
-        var optionalUser = userStorageDao.findById(id);
+        var optionalUser = userStorageDao.getById(id);
         optionalUser.ifPresent(userStorageDao::remove);
         return optionalUser.orElseThrow(UserNotFoundException::new);
     }
 
-    private static int getNextId() {
-        return ++id;
+    private int getNextId() {
+        int currentMaxId = userStorageDao.getMaxUserId().orElse(0);
+        return ++currentMaxId;
     }
-
-    private int calculateStartId() {
-        return userStorageDao.getMaxUserId().orElse(0);
-    }
-
 }

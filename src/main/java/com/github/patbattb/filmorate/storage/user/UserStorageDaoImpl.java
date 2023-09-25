@@ -26,14 +26,14 @@ public class UserStorageDaoImpl implements UserStorageDao {
     public Collection<User> getAll() {
         String userIdsSql = "SELECT user_id FROM users";
         return jdbcTemplate.queryForList(userIdsSql, Integer.class).stream()
-                .map(this::findById)
+                .map(this::getById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
     }
 
     @Override
-    public Optional<User> findById(int userId) {
+    public Optional<User> getById(int userId) {
         String userSql = """
                 SELECT u.*, f.friend_id AS friend_id, fr.friend_id AS friend_request_id
                 FROM users u
@@ -49,7 +49,7 @@ public class UserStorageDaoImpl implements UserStorageDao {
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public Optional<User> getByEmail(String email) {
         String userSql = """
                 SELECT u.*, f.friend_id AS friend_id, fr.friend_id AS friend_request_id
                 FROM users u
@@ -66,7 +66,10 @@ public class UserStorageDaoImpl implements UserStorageDao {
 
     @Override
     public Optional<User> add(User user) {
-        String sql = "INSERT INTO users VALUES (?, ?, ?, ?, ?);";
+        String sql = """
+        INSERT INTO users (user_id, email, login, nickname, birth_date)
+        VALUES (?, ?, ?, ?, ?);
+        """;
         int returning = jdbcTemplate.update(sql, user.getId(), user.getEmail(),
                     user.getLogin(), user.getNickname(), Date.valueOf(user.getBirth_date()));
         return returning == 1 ? Optional.of(user) : Optional.empty();

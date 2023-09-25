@@ -1,19 +1,16 @@
 package com.github.patbattb.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.github.patbattb.filmorate.annotation.AfterThen;
 import com.github.patbattb.filmorate.annotation.PositiveDuration;
 import jakarta.validation.constraints.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Film {
@@ -25,10 +22,8 @@ public class Film {
     private final String title;
     @Size(max=200)
     private final String description;
-    @Setter
-    private Set<String> genres;
-    @Setter
-    private String mpaaRating;
+    private final Set<String> genres;
+    private final String mpaaRating;
     @EqualsAndHashCode.Include
     @AfterThen("1894-12-31")
     private final LocalDate releaseDate;
@@ -36,8 +31,25 @@ public class Film {
     private final Duration duration;
     private final Set<Integer> likes = new HashSet<>();
 
+    @JsonCreator
+    public Film(String title, String description, Set<String> genres,
+                String mpaaRating, LocalDate releaseDate, Duration duration) {
+        this(0, title, description, genres, mpaaRating, releaseDate, duration);
+    }
+
+    @Builder(toBuilder = true)
+    public Film(int id, String title, String description, Set<String> genres,
+                String mpaaRating, LocalDate releaseDate, Duration duration) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.genres = genres;
+        this.mpaaRating = mpaaRating;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+    }
+
     public int getLikesCount() {
         return likes.size();
     }
-
 }

@@ -16,7 +16,7 @@ import java.util.Set;
 public class User {
 
     @Setter
-    int id;
+    private int id;
     @Email
     @EqualsAndHashCode.Include
     @NotBlank

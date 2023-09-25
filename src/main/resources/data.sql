@@ -9,8 +9,8 @@ VALUES
 (6, 'документальный');
 
 
-MERGE INTO mpaa_ratings (rating_id, name)
-KEY (rating_id)
+MERGE INTO mpaa_ratings (mpaa_id, name)
+KEY (mpaa_id)
 VALUES
 (1, 'G'),
 (2, 'PG'),
