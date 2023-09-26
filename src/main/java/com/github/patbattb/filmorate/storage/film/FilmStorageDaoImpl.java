@@ -4,6 +4,7 @@ import com.github.patbattb.filmorate.model.Film;
 import com.github.patbattb.filmorate.model.Genre;
 import com.github.patbattb.filmorate.model.MpaaRating;
 import com.github.patbattb.filmorate.storage.film.genre.GenreDao;
+import com.github.patbattb.filmorate.storage.film.like.LikeDao;
 import com.github.patbattb.filmorate.storage.film.mpaa.MpaaRatingDao;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,6 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,6 +30,7 @@ public class FilmStorageDaoImpl implements FilmStorageDao {
     JdbcTemplate jdbcTemplate;
     MpaaRatingDao mpaaRatingDao;
     GenreDao genreDao;
+    LikeDao likeDao;
 
     @Override
     public Collection<Film> getAll() {
@@ -106,10 +107,12 @@ public class FilmStorageDaoImpl implements FilmStorageDao {
         String mpaaName = mpaaRatingDao.getById(rs.getInt("mpaa_id"))
                 .map(MpaaRating::name)
                 .orElse("");
+
         int filmId = rs.getInt("film_id");
         Set<String> genres = genreDao.getGenreListByFilm(filmId).stream()
                 .map(Genre::name)
                 .collect(Collectors.toSet());
+
         return new Film(
                 filmId,
                 rs.getString("title"),
@@ -117,7 +120,8 @@ public class FilmStorageDaoImpl implements FilmStorageDao {
                 genres,
                 mpaaName,
                 rs.getDate("release_date").toLocalDate(),
-                Duration.ofMinutes(rs.getInt("duration"))
+                Duration.ofMinutes(rs.getInt("duration")),
+                likeDao.getLikeCountByFilmId(filmId)
         );
     }
 }

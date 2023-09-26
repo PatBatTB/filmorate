@@ -2,12 +2,14 @@ package com.github.patbattb.filmorate.controller;
 
 import com.github.patbattb.filmorate.exception.FilmAlreadyExistsException;
 import com.github.patbattb.filmorate.exception.FilmNotFoundException;
+import com.github.patbattb.filmorate.exception.LikeAlreadyExistsException;
 import com.github.patbattb.filmorate.exception.NotFoundException;
 import com.github.patbattb.filmorate.model.Film;
 import com.github.patbattb.filmorate.service.film.FilmService;
+import com.github.patbattb.filmorate.service.film.LikeService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,10 +18,11 @@ import java.util.Collection;
 @Validated
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
 
-    @Autowired
-    FilmService filmService;
+    private final FilmService filmService;
+    private final LikeService likeService;
 
     @GetMapping
     public Collection<Film> get() {
@@ -46,19 +49,20 @@ public class FilmController {
         return filmService.delete(id);
     }
 
-    @PutMapping("/{id}/like/{userId}")
-    public Film putLike(@PathVariable int id, @PathVariable int userId) throws NotFoundException {
-        return filmService.addLike(id, userId);
+    @PutMapping("/{filmId}/like/{userId}")
+    public Film putLike(@PathVariable int filmId, @PathVariable int userId)
+            throws NotFoundException, LikeAlreadyExistsException {
+        return likeService.addLike(filmId, userId);
     }
 
-    @DeleteMapping("/{id}/like/{userId}")
-    public Film deleteLike(@PathVariable int id, @PathVariable int userId) throws NotFoundException {
-        return filmService.removeLike(id, userId);
+    @DeleteMapping("/{filmId}/like/{userId}")
+    public Film deleteLike(@PathVariable int filmId, @PathVariable int userId) throws NotFoundException {
+        return likeService.removeLike(filmId, userId);
     }
 
     @GetMapping("/popular")
     public Collection<Film> getPopular(@RequestParam(defaultValue = "10") @Positive int count) {
-        return filmService.getPopularFilms(count);
+        return likeService.getPopularFilms(count);
     }
 
 }

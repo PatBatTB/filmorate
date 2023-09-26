@@ -8,7 +8,6 @@ import lombok.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -29,17 +28,17 @@ public class Film {
     private final LocalDate releaseDate;
     @PositiveDuration
     private final Duration duration;
-    private final Set<Integer> likes = new HashSet<>();
+    private final int likeCounter;
 
     @JsonCreator
     public Film(String title, String description, Set<String> genres,
                 String mpaaRating, LocalDate releaseDate, Duration duration) {
-        this(0, title, description, genres, mpaaRating, releaseDate, duration);
+        this(0, title, description, genres, mpaaRating, releaseDate, duration, 0);
     }
 
     @Builder(toBuilder = true)
     public Film(int id, String title, String description, Set<String> genres,
-                String mpaaRating, LocalDate releaseDate, Duration duration) {
+                String mpaaRating, LocalDate releaseDate, Duration duration, int likeCounter) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -47,9 +46,6 @@ public class Film {
         this.mpaaRating = mpaaRating;
         this.releaseDate = releaseDate;
         this.duration = duration;
-    }
-
-    public int getLikesCount() {
-        return likes.size();
+        this.likeCounter = likeCounter;
     }
 }

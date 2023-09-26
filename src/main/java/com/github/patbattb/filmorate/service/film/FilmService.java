@@ -2,34 +2,22 @@ package com.github.patbattb.filmorate.service.film;
 
 import com.github.patbattb.filmorate.exception.FilmAlreadyExistsException;
 import com.github.patbattb.filmorate.exception.FilmNotFoundException;
-import com.github.patbattb.filmorate.exception.NotFoundException;
-import com.github.patbattb.filmorate.exception.UserNotFoundException;
 import com.github.patbattb.filmorate.model.Film;
-import com.github.patbattb.filmorate.storage.StorageGetService;
 import com.github.patbattb.filmorate.storage.film.FilmStorageDao;
-import com.github.patbattb.filmorate.storage.user.UserStorageDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class FilmService {
 
     private final FilmStorageDao filmStorageDao;
-    private final UserStorageDao userStorageDao;
-    private final StorageGetService storageGetService;
 
-    public FilmService(@Qualifier("filmStorageDaoImpl") FilmStorageDao filmStorageDao,
-                       @Qualifier("userStorageDaoImpl") UserStorageDao userStorageDao,
-                       StorageGetService storageGetService) {
+    public FilmService(@Qualifier("filmStorageDaoImpl") FilmStorageDao filmStorageDao) {
         this.filmStorageDao = filmStorageDao;
-        this.userStorageDao = userStorageDao;
-        this.storageGetService = storageGetService;
     }
 
     private int getNextId() {
@@ -73,28 +61,5 @@ public class FilmService {
         var optionalFilm = filmStorageDao.getById(id);
         optionalFilm.ifPresent(filmStorageDao::remove);
         return optionalFilm.orElseThrow(FilmNotFoundException::new);
-    }
-
-    public Film addLike(int filmId, int userId) throws NotFoundException {
-        Film film;
-        userStorageDao.getById(userId).orElseThrow(UserNotFoundException::new);
-        film = storageGetService.getFilm(filmId);
-        film.getLikes().add(userId);
-        return film;
-    }
-
-    public Film removeLike(int id, int userId) throws NotFoundException {
-        Film film;
-        userStorageDao.getById(userId).orElseThrow(UserNotFoundException::new);
-        film = storageGetService.getFilm(id);
-        film.getLikes().remove(userId);
-        return film;
-    }
-
-    public Collection<Film> getPopularFilms(int count) {
-        return filmStorageDao.getAll().stream()
-                .sorted(Comparator.comparing(Film::getLikesCount, Comparator.reverseOrder()))
-                .limit(count)
-                .collect(Collectors.toList());
     }
 }
