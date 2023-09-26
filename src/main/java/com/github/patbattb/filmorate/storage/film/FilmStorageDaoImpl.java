@@ -1,6 +1,10 @@
 package com.github.patbattb.filmorate.storage.film;
 
 import com.github.patbattb.filmorate.model.Film;
+import com.github.patbattb.filmorate.model.Genre;
+import com.github.patbattb.filmorate.model.MpaaRating;
+import com.github.patbattb.filmorate.storage.film.genre.GenreDao;
+import com.github.patbattb.filmorate.storage.film.mpaa.MpaaRatingDao;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,6 +19,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Value
@@ -23,6 +28,8 @@ import java.util.stream.Collectors;
 public class FilmStorageDaoImpl implements FilmStorageDao {
 
     JdbcTemplate jdbcTemplate;
+    MpaaRatingDao mpaaRatingDao;
+    GenreDao genreDao;
 
     @Override
     public Collection<Film> getAll() {
@@ -96,12 +103,19 @@ public class FilmStorageDaoImpl implements FilmStorageDao {
     }
 
     private Film mapFilm(ResultSet rs, int rowNum) throws SQLException {
+        String mpaaName = mpaaRatingDao.getById(rs.getInt("mpaa_id"))
+                .map(MpaaRating::name)
+                .orElse("");
+        int filmId = rs.getInt("film_id");
+        Set<String> genres = genreDao.getGenreListByFilm(filmId).stream()
+                .map(Genre::name)
+                .collect(Collectors.toSet());
         return new Film(
-                rs.getInt("film_id"),
+                filmId,
                 rs.getString("title"),
                 rs.getString("description"),
-                new HashSet<>(),
-                rs.getString("mpaa_id"),
+                genres,
+                mpaaName,
                 rs.getDate("release_date").toLocalDate(),
                 Duration.ofMinutes(rs.getInt("duration"))
         );

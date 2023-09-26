@@ -133,7 +133,7 @@ public class UserStorageDaoImpl implements UserStorageDao {
             optionalUser.get().getFriendRequestList().remove(0);
         }
 
-        return optionalUser.orElseThrow(SQLException::new);
+        return optionalUser.orElseThrow(() -> new EmptyResultDataAccessException(1));
 
     }
 }
